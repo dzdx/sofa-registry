@@ -126,6 +126,12 @@
                 <groupId>com.alipay.sofa</groupId>
                 <artifactId>registry-store-jraft</artifactId>
                 <version>${project.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.rocksdb</groupId>
+                        <artifactId>rocksdbjni</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.alipay.sofa</groupId>
@@ -337,6 +343,11 @@
                 <artifactId>powermock-api-mockito</artifactId>
                 <version>${powermock.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.rocksdb</groupId>
+                <artifactId>rocksdbjni</artifactId>
+                <version>5.18.4</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
