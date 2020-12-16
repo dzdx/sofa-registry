@@ -22,7 +22,7 @@ import java.util.List;
 
 public interface AppRevisionNodeService {
 
-    void register(AppRevisionRegister appRevision);
+    void register(Object appRevision);
 
     List<AppRevisionRegister> fetchMulti(List<String> keys);
 

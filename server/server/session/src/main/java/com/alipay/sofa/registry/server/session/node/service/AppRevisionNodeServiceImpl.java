@@ -46,10 +46,10 @@ public class AppRevisionNodeServiceImpl implements AppRevisionNodeService {
     @Autowired
     RaftClientManager             raftClientManager;
 
-    public void register(AppRevisionRegister appRevision) {
-        Request<AppRevisionRegister> request = new Request<AppRevisionRegister>() {
+    public void register(Object appRevision) {
+        Request<Object> request = new Request<Object>() {
             @Override
-            public AppRevisionRegister getRequestBody() {
+            public Object getRequestBody() {
                 return appRevision;
             }
 

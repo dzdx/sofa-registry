@@ -16,6 +16,8 @@
  */
 package com.alipay.sofa.registry.client.api;
 
+import com.alipay.sofa.registry.core.model.AppRevisionRegister;
+
 /**
  * The interface Publisher.
  *
@@ -30,4 +32,6 @@ public interface Publisher extends Register {
      * @param data the data
      */
     void republish(String... data);
+
+    void setPreRequest(Object register);
 }
