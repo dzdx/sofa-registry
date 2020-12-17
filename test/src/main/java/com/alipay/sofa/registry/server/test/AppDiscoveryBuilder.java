@@ -17,6 +17,7 @@
 package com.alipay.sofa.registry.server.test;
 
 import com.alipay.sofa.registry.common.model.AppRegisterServerDataBox;
+import com.alipay.sofa.registry.common.model.store.DataInfo;
 import com.alipay.sofa.registry.core.model.AppRevisionInterface;
 import com.alipay.sofa.registry.core.model.AppRevisionRegister;
 
@@ -33,18 +34,20 @@ public class AppDiscoveryBuilder {
         revisionRegister.setRevision(revision);
     }
 
-    public void addService(String serviceName, String group, String instanceID) {
+    public String addService(String serviceName, String group, String instanceID) {
         if(revisionRegister.getInterfaces()==null){
             revisionRegister.setInterfaces(new HashMap<>());
         }
-        AppRevisionInterface inf =revisionRegister.getInterfaces().computeIfAbsent(serviceName, k->new AppRevisionInterface());
+        String serviceId = DataInfo.toDataInfoId(serviceName, instanceID, group);
+        AppRevisionInterface inf =revisionRegister.getInterfaces().computeIfAbsent(DataInfo.toDataInfoId(serviceName, instanceID, group), k->new AppRevisionInterface());
         inf.setGroup(group);
         inf.setInstanceId(instanceID);
         inf.setDataId(serviceName);
+        return serviceId;
     }
 
-    public void addMetaInterfaceParam(String serviceName, String key, String value){
-        AppRevisionInterface inf =revisionRegister.getInterfaces().computeIfAbsent(serviceName, k->new AppRevisionInterface());
+    public void addMetaInterfaceParam(String serviceId, String key, String value){
+        AppRevisionInterface inf =revisionRegister.getInterfaces().get(serviceId);
         if(inf.getServiceParams()== null){
             inf.setServiceParams(new HashMap<>());
         }
@@ -65,11 +68,11 @@ public class AppDiscoveryBuilder {
         dataBox.getBaseParams().computeIfAbsent(key, k -> new ArrayList<>()).add(value);
     }
 
-    public void addDataInterfaceParam(String serviceName, String key, String value){
+    public void addDataInterfaceParam(String serviceId, String key, String value){
         if(dataBox.getInterfaceParams()==null){
             dataBox.setInterfaceParams(new HashMap<>());
         }
-        dataBox.getInterfaceParams().computeIfAbsent(serviceName, k -> new HashMap<>()).computeIfAbsent(key, k->new ArrayList<>()).add(value);
+        dataBox.getInterfaceParams().computeIfAbsent(serviceId, k -> new HashMap<>()).computeIfAbsent(key, k->new ArrayList<>()).add(value);
     }
 
     public AppRevisionRegister buildAppRevision() {

@@ -32,17 +32,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AppRevisionCacheRegistry {
 
-    private static final Logger                                                     LOG                = LoggerFactory
-                                                                                                           .getLogger(AppRevisionCacheRegistry.class);
+    private static final Logger LOG = LoggerFactory
+            .getLogger(AppRevisionCacheRegistry.class);
 
     @Autowired
-    private AppRevisionNodeService                                                  appRevisionNodeService;
+    private AppRevisionNodeService appRevisionNodeService;
 
-    final private Map<String /*revision*/, AppRevisionRegister>                    registry           = new ConcurrentHashMap<>();
-    private String                                                                  keysDigest         = "";
+    final private Map<String /*revision*/, AppRevisionRegister> registry = new ConcurrentHashMap<>();
+    private String keysDigest = "";
     final private Map<String /*interface*/, Map<String /*appname*/, Set<String>>> interfaceRevisions = new ConcurrentHashMap<>();
-    final private Map<String /*appname*/, Set<String /*interfaces*/>>             appInterfaces      = new ConcurrentHashMap<>();
-    private SingleFlight                                                            singleFlight       = new SingleFlight();
+    final private Map<String /*appname*/, Set<String /*interfaces*/>> appInterfaces = new ConcurrentHashMap<>();
+    private SingleFlight singleFlight = new SingleFlight();
 
     public AppRevisionCacheRegistry() {
     }
@@ -97,6 +97,9 @@ public class AppRevisionCacheRegistry {
     }
 
     private void onNewRevision(AppRevisionRegister rev) {
+        if (rev.getInterfaces() == null) {
+            return;
+        }
         for (AppRevisionInterface inf : rev.getInterfaces().values()) {
             String dataInfoId = DataInfo.toDataInfoId(inf.getDataId(), inf.getInstanceId(), inf.getGroup());
             Map<String, Set<String>> apps = interfaceRevisions.computeIfAbsent(dataInfoId,

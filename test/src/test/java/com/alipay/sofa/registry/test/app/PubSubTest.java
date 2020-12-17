@@ -19,22 +19,15 @@ package com.alipay.sofa.registry.test.app;
 import com.alibaba.fastjson.JSON;
 import com.alipay.sofa.registry.client.api.registration.PublisherRegistration;
 import com.alipay.sofa.registry.client.api.registration.SubscriberRegistration;
-import com.alipay.sofa.registry.common.model.AppRegisterServerDataBox;
 import com.alipay.sofa.registry.common.model.constants.ValueConstants;
-import com.alipay.sofa.registry.common.model.store.DataInfo;
-import com.alipay.sofa.registry.common.model.store.Subscriber;
-import com.alipay.sofa.registry.common.model.store.Watcher;
-import com.alipay.sofa.registry.core.model.AppRevisionInterface;
-import com.alipay.sofa.registry.core.model.AppRevisionRegister;
+
 import com.alipay.sofa.registry.core.model.ScopeEnum;
-import com.alipay.sofa.registry.core.model.SubscriberRegister;
 import com.alipay.sofa.registry.server.test.AppDiscoveryBuilder;
 import com.alipay.sofa.registry.test.BaseIntegrationTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -46,22 +39,23 @@ public class PubSubTest extends BaseIntegrationTest {
         String appname = "foo";
         String revision = "1111";
         AppDiscoveryBuilder builder = new AppDiscoveryBuilder(appname, revision, "127.0.0.1:12220");
-        builder.addService("func1", ValueConstants.DEFAULT_GROUP,
+        String serviceId1 = builder.addService("func1", ValueConstants.DEFAULT_GROUP,
             ValueConstants.DEFAULT_INSTANCE_ID);
-        builder.addService("func2", ValueConstants.DEFAULT_GROUP,
+        String serviceId2 = builder.addService("func2", ValueConstants.DEFAULT_GROUP,
             ValueConstants.DEFAULT_INSTANCE_ID);
         builder.addMetaBaseParam("metaParam1", "metaValue1");
-        builder.addMetaInterfaceParam("func1", "metaParam2", " metaValue2");
-        builder.addMetaInterfaceParam("func2", "metaParam3", " metaValue3");
+        builder.addMetaInterfaceParam(serviceId1, "metaParam2", " metaValue2");
+        builder.addMetaInterfaceParam(serviceId2, "metaParam3", " metaValue3");
         builder.addDataBaseParam("dataParam1", "dataValue1");
-        builder.addDataInterfaceParam("func1", "dataParam2", "dataValue2");
-        builder.addDataInterfaceParam("func2", "dataParam3", "dataValue3");
+        builder.addDataInterfaceParam(serviceId1, "dataParam2", "dataValue2");
+        builder.addDataInterfaceParam(serviceId2, "dataParam3", "dataValue3");
 
-        PublisherRegistration registration = new PublisherRegistration(appname);
+        PublisherRegistration publisher = new PublisherRegistration(appname);
+        publisher.setGroup(ValueConstants.SOFA_APP);
 
-        registration.setPreRequest(builder.buildAppRevision());
+        publisher.setPreRequest(builder.buildAppRevision());
 
-        registryClient1.register(registration, JSON.toJSONString(builder.buildData()));
+        registryClient1.register(publisher, JSON.toJSONString(builder.buildData()));
 
         MySubscriberDataObserver observer = new MySubscriberDataObserver();
         SubscriberRegistration subReg = new SubscriberRegistration("func1", observer);
