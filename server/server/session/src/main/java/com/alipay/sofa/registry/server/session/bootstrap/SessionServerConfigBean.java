@@ -1135,17 +1135,20 @@ public class SessionServerConfigBean implements SessionServerConfig {
 
     @Override
     public boolean isInvalidForeverZone(String zoneId) {
-
-        String[] zoneNameArr = getInvalidForeverZones().split(";");
         if (invalidForeverZonesSet == null) {
-            invalidForeverZonesSet = new HashSet<>();
-            for (String str : zoneNameArr) {
-                if (str.trim().length() > 0) {
-                    invalidForeverZonesSet.add(str);
+            synchronized (this) {
+                if (invalidForeverZonesSet == null) {
+                    String[] zoneNameArr = getInvalidForeverZones().split(";");
+                    Set<String> set = new HashSet<>();
+                    for (String str : zoneNameArr) {
+                        if (str.trim().length() > 0) {
+                            set.add(str);
+                        }
+                    }
+                    invalidForeverZonesSet = set;
                 }
             }
         }
-
         return invalidForeverZonesSet.contains(zoneId);
     }
 
@@ -1230,6 +1233,7 @@ public class SessionServerConfigBean implements SessionServerConfig {
 
     /**
      * Getter method for property <tt>schedulerFetchDataVersionIntervalMs</tt>.
+     *
      * @return property value of schedulerFetchDataVersionIntervalMs
      */
     @Override
@@ -1239,6 +1243,7 @@ public class SessionServerConfigBean implements SessionServerConfig {
 
     /**
      * Setter method for property <tt>schedulerFetchDataVersionIntervalMs</tt>.
+     *
      * @param schedulerFetchDataVersionIntervalMs value to be assigned to property schedulerFetchDataVersionIntervalMs
      */
     public void setSchedulerFetchDataVersionIntervalMs(int schedulerFetchDataVersionIntervalMs) {
